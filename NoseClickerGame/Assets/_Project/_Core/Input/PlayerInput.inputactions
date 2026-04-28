@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "PlayerInput",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "1bf4bf06-9409-47ec-8a6d-9ab378aa9903",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "ce5d4c7a-cc4d-47c8-938f-98fb14bc4919",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d219551c-1ef1-45e2-a4d7-4ebe948d7765",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
