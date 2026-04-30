@@ -18,7 +18,7 @@ public class ProgressBarUI : MonoBehaviour
 
     private void UpdateUIBar(float impact)
     {
-        _progressBar.fillAmount = impact / _currentAnimal.NeedCare;
+        _progressBar.fillAmount = impact / _currentAnimal.Data.NeedCare;
     }
 
 }

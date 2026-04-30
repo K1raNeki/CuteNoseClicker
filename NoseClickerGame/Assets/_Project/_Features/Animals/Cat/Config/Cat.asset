@@ -10,10 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6adc765540e2f4ef2bcc32fb287fd95e, type: 3}
-  m_Name: TestAnimal
+  m_Name: Cat
   m_EditorClassIdentifier: Assembly-CSharp::AnimalData
-  ID: Test
-  Name: "\u0414\u0435\u0431\u0438\u043B"
-  NeedCare: 5
-  Icon: {fileID: 0}
-  MainView: {fileID: 0}
+  ID: Cat
+  Name: "\u041A\u043E\u0442\u0435\u043D\u043E\u043A"
+  Icon: {fileID: -6686330998519750642, guid: 84d3cf1fe53484672848d2cbb7798be4, type: 3}
+  OverrideController: {fileID: 22100000, guid: 4651403ff532649cfb69eeb23226ce71, type: 2}
+  NeedCare: 10
+  AngryMultiplier: 0.5
+  AngryPoints:
+  - 0.5

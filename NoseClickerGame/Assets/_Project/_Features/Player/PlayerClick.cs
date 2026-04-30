@@ -14,15 +14,14 @@ public class PlayerClick : MonoBehaviour
     void Update()
     {
         if (IsClick())
-            CheckedMousePos();
+            ChekedClickedObject();
     }
 
     public bool IsClick() => _inputSys.Player.Click.triggered;
     public bool IsHoldClick() => _inputSys.Player.Click.IsPressed();
 
-    private void CheckedMousePos()
+    private void ChekedClickedObject()
     {
-        Debug.Log(1);
         if (Mouse.current == null) return;
 
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
@@ -32,19 +31,20 @@ public class PlayerClick : MonoBehaviour
 
         if (_hit.collider != null)
         {
-                    Debug.Log(3);
+            MonoBehaviour target = _hit.collider.GetComponentInParent<Animal>();
+            Debug.Log($"Попал в {_hit.collider.name}");
 
-            if (_hit.collider.TryGetComponent<Animal>(out var animal))
+            switch (target)
             {
-                        Debug.Log(4);
-
-                animal.Interact();
-                Debug.Log($"Попал в {_hit.collider.name}");
+                case Animal animal:
+                    float multy = (_hit.collider == animal.NoseCollider) ? 2f : 1f;
+                    animal.TakeCare(multy);
+                    break;
             }
         }
-                Debug.Log(2);
 
     }
+
 
     private void OnEnable() => _inputSys.Enable();
     private void OnDisable() => _inputSys.Disable();
