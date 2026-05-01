@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class Animal : MonoBehaviour
 {
     [Header("Links")]
@@ -13,7 +13,8 @@ public class Animal : MonoBehaviour
 
     [Header("Current Indexes")]
     private AnimalState _currentState;
-    private int _currentAngryPoint;
+    private bool[] _trigerredPoints;
+    private float[] _sortedAngryPoints;
     private float _currentCare;
 
 
@@ -22,10 +23,15 @@ public class Animal : MonoBehaviour
         _animator = GetComponent<Animator>();
         _animator.runtimeAnimatorController = Data.OverrideController;
 
+        _trigerredPoints = new bool[Data.AngryPoints.Length];
+        _sortedAngryPoints = (float[])Data.AngryPoints.Clone();
+        Array.Sort(_sortedAngryPoints);
+
         SwitchStatet(AnimalState.Default);
     }
 
-    public event Action<float> AnimalTakeCare;
+    public static event Action<float> AnimalTakeCare;
+    public static event Action<bool> AnimalAgressiveStart;
 
     public void TakeCare(float takedCare = 1)
     {
@@ -59,19 +65,24 @@ public class Animal : MonoBehaviour
             return;
         }
 
-        if (_currentAngryPoint < Data.AngryPoints.Length
-            && _currentState != AnimalState.Angry
-            && (_currentCare / Data.NeedCare) >= Data.AngryPoints[_currentAngryPoint])
+        for (int i = 0; i < _sortedAngryPoints.Length; i++)
         {
-            StartCoroutine(AgressionStart(2f));
+            if (!_trigerredPoints[i]
+                && _currentCare / Data.NeedCare >= _sortedAngryPoints[i]
+                && _currentState != AnimalState.Angry)
+            {
+                _trigerredPoints[i] = true;
+                StartCoroutine(AgressionStart(12f));
+            }
         }
     }
 
     private IEnumerator AgressionStart(float dur)
     {
+        AnimalAgressiveStart?.Invoke(true);
         SwitchStatet(AnimalState.Angry);
         yield return new WaitForSeconds(dur);
-        _currentAngryPoint++;
+        AnimalAgressiveStart?.Invoke(false);
         SwitchStatet(AnimalState.Default);
     }
 

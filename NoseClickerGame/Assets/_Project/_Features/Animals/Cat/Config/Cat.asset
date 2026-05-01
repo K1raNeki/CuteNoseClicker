@@ -19,4 +19,4 @@ MonoBehaviour:
   NeedCare: 10
   AngryMultiplier: 0.5
   AngryPoints:
-  - 0.5
+  - 0.3
