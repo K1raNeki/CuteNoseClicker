@@ -22,31 +22,15 @@ public class PlayerClick : MonoBehaviour
 
     private void ChekedClickedObject()
     {
-        if (Mouse.current == null) return;
+        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
 
-        RaycastHit2D _hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
-
-        if (_hit.collider != null)
+        if (hit.collider != null)
         {
-            MonoBehaviour target = _hit.collider.GetComponentInParent<MonoBehaviour>();
-            // Debug.Log($"Попал в {_hit.collider.name}");
-
-            switch (target)
-            {
-                case Animal animal:
-                    float multy = (_hit.collider == animal.NoseCollider) ? 2f : 1f;
-                    animal.TakeCare(multy);
-                    break;
-
-                case MinigamePoint point:
-                    point.Completed();
-                    break;
-            }
+            IClickable target = hit.collider.GetComponentInParent<IClickable>();
+            target?.Interact();
         }
-
     }
 
 

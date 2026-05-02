@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Animator))]
-public class Animal : MonoBehaviour
+public class Animal : MonoBehaviour, IClickable
 {
     [Header("Links")]
     public AnimalData Data;
@@ -31,7 +32,17 @@ public class Animal : MonoBehaviour
     }
 
     public static event Action<float> AnimalTakeCare;
-    public static event Action<bool> AnimalAgressiveStart;
+    public static Action<bool> AnimalAgressiveStart;
+    public void Interact()
+    {
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+
+        float multiplier = NoseCollider.OverlapPoint(mousePos) ? 2f : 1f;
+
+        if (multiplier > 1f) Debug.Log("Nose is sacks!");
+
+        TakeCare(multiplier);
+    }
 
     public void TakeCare(float takedCare = 1)
     {
@@ -72,18 +83,28 @@ public class Animal : MonoBehaviour
                 && _currentState != AnimalState.Angry)
             {
                 _trigerredPoints[i] = true;
-                StartCoroutine(AgressionStart(12f));
+                // StartCoroutine(AgressionStart(12f));
+                AgressionStart(true);
             }
         }
     }
 
-    private IEnumerator AgressionStart(float dur)
+    // private IEnumerator AgressionStart(float dur)
+    // {
+    //     AnimalAgressiveStart?.Invoke(true);
+    //     SwitchStatet(AnimalState.Angry);
+    //     yield return new WaitForSeconds(dur);
+    //     AnimalAgressiveStart?.Invoke(false);
+    //     SwitchStatet(AnimalState.Default);
+    // }
+
+    private void AgressionStart(bool isAngry)
     {
-        AnimalAgressiveStart?.Invoke(true);
-        SwitchStatet(AnimalState.Angry);
-        yield return new WaitForSeconds(dur);
-        AnimalAgressiveStart?.Invoke(false);
-        SwitchStatet(AnimalState.Default);
+        AnimalAgressiveStart?.Invoke(isAngry);
+        if (isAngry)
+            SwitchStatet(AnimalState.Angry);
+        else
+            SwitchStatet(AnimalState.Default);
     }
 
     private void SwitchStatet(AnimalState state)

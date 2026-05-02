@@ -5,17 +5,20 @@ using UnityEngine;
 public class AgressiveMiniGame : MonoBehaviour
 {
     [Header("Links")]
-    [SerializeField] private GameObject _minigameContainer;
-    [SerializeField] private GameObject _linePrefab;
-    [SerializeField] private GameObject _pointPrefab;
-    [SerializeField] private float _lineHight;
     public Collider2D Barier;
     private GameObject _currentLine;
+    [SerializeField] private GameObject _minigameContainer;
+    
+    [Header("Prefabs")]
+    [SerializeField] private GameObject _linePrefab;
+    [SerializeField] private GameObject _pointPrefab;
 
     [Header("Settings")]
     private List<GameObject> _points = new List<GameObject>(33);
+    [SerializeField] private float _lineHight;
     private bool _start;
     private float _timer;
+    private float _speedTimer = 1;
 
     void Awake()
     {
@@ -26,9 +29,10 @@ public class AgressiveMiniGame : MonoBehaviour
     {
         if (_start)
         {
-            _timer += 0.8f * Time.deltaTime;
+            _timer += _speedTimer * Time.deltaTime;
             if (_timer >= 1)
             {
+                _speedTimer= Random.Range(0.9f, 3f);
                 _timer = 0;
                 CreatePoint();
             }
@@ -55,7 +59,6 @@ public class AgressiveMiniGame : MonoBehaviour
                 _points.Clear();
                 break;
         }
-
     }
 
     private void CreatePoint()

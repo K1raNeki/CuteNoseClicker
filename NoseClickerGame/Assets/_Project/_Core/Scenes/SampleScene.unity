@@ -212,7 +212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &128283255
 RectTransform:
   m_ObjectHideFlags: 0
@@ -324,7 +324,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.57000005, z: 0}
   m_LocalScale: {x: 4.5, y: 4.5, z: 4.5}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1147511861}
   - {fileID: 1962907859}
@@ -828,11 +828,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a56c14bab9dcd46e49318d29ae6a79fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AgressiveMiniGame
+  Barier: {fileID: 1440818445}
   _minigameContainer: {fileID: 519346838}
   _linePrefab: {fileID: 4336211609709743284, guid: e7066ba9b3c784b688ea7216b90e28ad, type: 3}
   _pointPrefab: {fileID: 432831027786375474, guid: f7ae226131ddc4fb7a9ce22f2deed125, type: 3}
   _lineHight: 4
-  Barier: {fileID: 1440818445}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -1532,6 +1532,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89e71d9e7d02b4e838159084e4a71707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameBar
+  _agressiveBar: {fileID: 385349645}
+  BarScore: 0
 --- !u!61 &1440818445
 BoxCollider2D:
   m_ObjectHideFlags: 0
