@@ -18,7 +18,7 @@ public class ProgressBarUI : MonoBehaviour
     {
         _progressBar.fillAmount = 0;
         SpawnAngryPoints();
-        Animal.AnimalTakeCare += UpdateUIBarProgress;
+        _currentAnimal.AnimalTakeCare += UpdateUIBarProgress;
 
     }
 
@@ -47,5 +47,5 @@ public class ProgressBarUI : MonoBehaviour
     }
 
 
-    void OnDestroy() => Animal.AnimalTakeCare -= UpdateUIBarProgress;
+    void OnDestroy() => _currentAnimal.AnimalTakeCare -= UpdateUIBarProgress;
 }

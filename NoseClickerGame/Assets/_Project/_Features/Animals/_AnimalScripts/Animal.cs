@@ -12,7 +12,9 @@ public class Animal : MonoBehaviour, IClickable
     public PolygonCollider2D NoseCollider;
     private Animator _animator;
 
-    [Header("Current Indexes")]
+    [Header("Current Indexes")] // in a config
+    public float AngryScoreAwake = 0.4f;
+    public float MiniGameScore;
     private AnimalState _currentState;
     private bool[] _trigerredPoints;
     private float[] _sortedAngryPoints;
@@ -31,15 +33,19 @@ public class Animal : MonoBehaviour, IClickable
         SwitchStatet(AnimalState.Default);
     }
 
-    public static event Action<float> AnimalTakeCare;
-    public static Action<bool> AnimalAgressiveStart;
+    private void Start()
+    {
+        // MinigameBar.MiniaGameEnd += ResultMiniGame;
+    }
+
+    public event Action<float> AnimalTakeCare;
+    public Action<bool> AnimalAgressiveStart;
+
     public void Interact()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
         float multiplier = NoseCollider.OverlapPoint(mousePos) ? 2f : 1f;
-
-        if (multiplier > 1f) Debug.Log("Nose is sacks!");
 
         TakeCare(multiplier);
     }
@@ -83,31 +89,22 @@ public class Animal : MonoBehaviour, IClickable
                 && _currentState != AnimalState.Angry)
             {
                 _trigerredPoints[i] = true;
-                // StartCoroutine(AgressionStart(12f));
                 AgressionStart(true);
             }
         }
     }
 
-    // private IEnumerator AgressionStart(float dur)
-    // {
-    //     AnimalAgressiveStart?.Invoke(true);
-    //     SwitchStatet(AnimalState.Angry);
-    //     yield return new WaitForSeconds(dur);
-    //     AnimalAgressiveStart?.Invoke(false);
-    //     SwitchStatet(AnimalState.Default);
-    // }
-
     private void AgressionStart(bool isAngry)
     {
-        AnimalAgressiveStart?.Invoke(isAngry);
         if (isAngry)
             SwitchStatet(AnimalState.Angry);
         else
             SwitchStatet(AnimalState.Default);
+
+        AnimalAgressiveStart?.Invoke(isAngry);
     }
 
-    private void SwitchStatet(AnimalState state)
+    public void SwitchStatet(AnimalState state)
     {
         _currentState = state;
 
