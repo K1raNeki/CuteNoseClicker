@@ -6,8 +6,8 @@ using UnityEngine;
 public class MiniGamePoint : MonoBehaviour, IClickable
 {
     [Header("Links")]
-    public float FailPositionX;
-    public float ScoreCorrect;
+    private float _failPositionX;
+    private float _scoreCorrect;
     private bool isInit;
 
     SpriteRenderer _renderer;
@@ -27,46 +27,54 @@ public class MiniGamePoint : MonoBehaviour, IClickable
         MovePoint();
 
         if ((_pointIsLoose || _pointIsWin) && !_renderer.isVisible)
-            OnPointFinished();
+            PointFinished();
     }
 
     public void Init(float failPos, float scoreCorrect)
     {
         isInit = true;
-        FailPositionX = failPos; ScoreCorrect = scoreCorrect;
+        _failPositionX = failPos;
+        _scoreCorrect = scoreCorrect;
     }
 
     public void Interact() => Completed();
 
     public static event Action<bool, float> OnPointResult;
-    public static event Action<MiniGamePoint> PointFinished;
+    public static event Action<MiniGamePoint> OnPointFinished;
 
     private void Completed()
     {
         _pointIsWin = true;
-        // Debug.Log($"{this} выебан");
-        OnPointResult?.Invoke(true, ScoreCorrect);
+        OnPointResult?.Invoke(true, _scoreCorrect);
         _renderer.color = Color.green;
     }
     private void Fail()
     {
         _pointIsLoose = true;
-        // Debug.Log($"{this} проебан");
-        OnPointResult?.Invoke(false, ScoreCorrect);
+        OnPointResult?.Invoke(false, _scoreCorrect);
         _renderer.color = Color.red;
     }
 
-    private void OnPointFinished()
+    private void PointFinished()
     {
         gameObject.SetActive(false);
-        PointFinished?.Invoke(this);
+        OnPointFinished?.Invoke(this);
     }
 
     private void MovePoint()
     {
-        transform.position = new Vector2(transform.position.x - 6f * Time.deltaTime, transform.position.y);
+        transform.localPosition = new Vector2(transform.localPosition.x - 6f * Time.deltaTime, transform.localPosition.y);
 
-        if (transform.position.x <= FailPositionX && !_pointIsLoose && !_pointIsWin)
+        if (transform.localPosition.x <= _failPositionX && !_pointIsLoose && !_pointIsWin)
             Fail();
     }
+}
+[System.Flags]
+public enum PointTypes
+{
+    Default = 0,
+    Double = 1 << 0,
+    Hold = 1 << 1,
+    Fake = 1 << 2,
+    Wave = 1 << 3
 }

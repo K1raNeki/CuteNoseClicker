@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b5f032639824674a252d1a85423588, type: 3}
+  m_Name: CatGame2
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalMiniGameFactor
+  AngryBarPositionX: 0.7
+  StartAngerFill: 0.4
+  CanInvertLine: 1
+  InvertPoints:
+  - 0.3
+  - 0.6
+  MoveSpeedPoint: 6
+  ScoreTaked: 0.2
+  Types: 

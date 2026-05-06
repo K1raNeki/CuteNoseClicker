@@ -7,7 +7,7 @@ public class ProgressBarUI : MonoBehaviour
     [Header("LinksMain")]
     [SerializeField] private Image _progressBar;
 
-    [Header("LinksAngryPOints")]
+    [Header("LinksAngryPoints")]
     [SerializeField] private Image _progressBarContainer;
     [SerializeField] private Image _angryPointPrefab;
     [SerializeField] private Animal _currentAnimal;
@@ -29,7 +29,13 @@ public class ProgressBarUI : MonoBehaviour
 
     private void SpawnAngryPoints()
     {
-        foreach (float point in _currentAnimal.Data.AngryPoints)
+        float[] points = new float[_currentAnimal.Data.MiniGames.Length];
+        for(int i = 0; i < _currentAnimal.Data.MiniGames.Length; i++)
+        {
+            points[i] = _currentAnimal.Data.MiniGames[i].AngryBarPositionX;
+        }
+
+        foreach (float point in points)
         {
             Image angryPoint = Instantiate(_angryPointPrefab, _progressBarContainer.transform);
             RectTransform rect = angryPoint.rectTransform;

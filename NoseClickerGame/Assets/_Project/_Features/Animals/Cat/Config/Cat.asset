@@ -17,6 +17,7 @@ MonoBehaviour:
   Icon: {fileID: -6686330998519750642, guid: 84d3cf1fe53484672848d2cbb7798be4, type: 3}
   OverrideController: {fileID: 22100000, guid: 4651403ff532649cfb69eeb23226ce71, type: 2}
   NeedCare: 10
-  AngryMultiplier: 0.5
-  AngryPoints:
-  - 0.3
+  Attemps: 3
+  MiniGames:
+  - {fileID: 11400000, guid: 4aa568a0a3e214bd1998f7f18dbef4e8, type: 2}
+  - {fileID: 11400000, guid: 63e30b4bb5cb441afa9ae618b018b01b, type: 2}

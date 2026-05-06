@@ -12,9 +12,10 @@ public class AnimalData : ScriptableObject
     [Header("Anim")]
     public AnimatorOverrideController OverrideController;
 
-    [Header("Balanse")]
+    [Header("Balance")]
     public float NeedCare;
-    public float AngryMultiplier;
-    public float[] AngryPoints;
+    public int Attemps = 3;
 
+    [Header("MiniGames")]
+    public AnimalMiniGameFactor[] MiniGames;
 }
