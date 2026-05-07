@@ -105,7 +105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a4e36763cdb347f1a6e856a8b6f6814, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigamePoint
-  _renderer: {fileID: 3795588365602890964}
 --- !u!58 &11543709407901341
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -141,4 +140,4 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.6

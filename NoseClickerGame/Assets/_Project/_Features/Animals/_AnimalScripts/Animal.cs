@@ -14,7 +14,9 @@ public class Animal : MonoBehaviour, IClickable
     private AnimalState _currentState;
 
     [Header("Current Indexes")]
+    [SerializeField] private float _penalty = 0.10f;
     private float _currentCare;
+    private int _currentMiniGame = -1;
     private bool[] _isCompletedMiniGame;
     private AnimalMiniGameFactor[] _sortedMiniGames;
 
@@ -79,10 +81,40 @@ public class Animal : MonoBehaviour, IClickable
             && !_isCompletedMiniGame[i]
             && _currentState != AnimalState.Angry)
             {
-                _isCompletedMiniGame[i] = true;
+                _currentMiniGame = i;
                 AgressionStart(true, Data.MiniGames[i]);
+                break;
             }
         }
+    }
+
+    public void CompleteActiveMiniGame(bool success)
+    {
+        if (success && _currentMiniGame != -1)
+            _isCompletedMiniGame[_currentMiniGame] = true;
+        else if (!success)
+        {
+            _currentCare = Data.NeedCare * _sortedMiniGames[_currentMiniGame].AngryBarPositionX * (1f - _penalty);
+            AnimalTakeCare?.Invoke(_currentCare);
+        }
+
+        _currentMiniGame = -1;
+        SwitchStatet(AnimalState.Default);
+    }
+    public bool IsGameCompleted(AnimalMiniGameFactor config)
+    {
+        int index = Array.IndexOf(_sortedMiniGames, config);
+        if (index != -1)
+            return _isCompletedMiniGame[index];
+
+        return false;
+    }
+
+    public void AgressionStart(bool isAngry, AnimalMiniGameFactor config)
+    {
+        SwitchStatet(isAngry ? AnimalState.Angry : AnimalState.Default);
+
+        AnimalAgressiveStart?.Invoke(isAngry, config);
     }
 
     public void SwitchStatet(AnimalState state)
@@ -98,16 +130,6 @@ public class Animal : MonoBehaviour, IClickable
             BodyColliders[i].gameObject.SetActive(i == index && i != (int)AnimalState.Angry);
         }
         _animator.SetTrigger(state.ToString());
-    }
-
-    public void AgressionStart(bool isAngry, AnimalMiniGameFactor config)
-    {
-        if (isAngry)
-            SwitchStatet(AnimalState.Angry);
-        else
-            SwitchStatet(AnimalState.Default);
-
-        AnimalAgressiveStart?.Invoke(isAngry, config);
     }
 
 }

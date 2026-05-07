@@ -16,6 +16,6 @@ MonoBehaviour:
   StartAngerFill: 0.3
   CanInvertLine: 0
   InvertPoints: []
-  MoveSpeedPoint: 6
+  MoveSpeedPoint: 5
   ScoreTaked: 0.1
   Types: 000000000100000006000000ffffffff

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,9 +6,9 @@ using UnityEngine.UI;
 public class MiniGameMain : MonoBehaviour
 {
     [Header("Links")]
-    public Animal CurrentAnimal;
+    [HideInInspector] public Animal CurrentAnimal;
+    [HideInInspector] public AnimalMiniGameFactor CurrentFactor;
     [SerializeField] private MiniGameDataMain _data;
-    private AnimalMiniGameFactor _currentFactor;
     [SerializeField] private GameObject _minigameContainer;
     [SerializeField] private Collider2D _barier;
     [SerializeField] private Image _agressiveBar;
@@ -26,36 +27,40 @@ public class MiniGameMain : MonoBehaviour
 
 
 
-    void Awake()
+    private void Awake()
     {
         _pointController = new PointController(
             _freeObjects,
             _busyObjects,
             _data.PointPrefab,
             _barier);
+    }
 
-        CurrentAnimal.AnimalAgressiveStart += CreateButtonLines;
+    private void Start()
+    {
         MiniGamePoint.OnPointResult += GetPointResult;
         MiniGamePoint.OnPointFinished += _pointController.RecyclePoint;
-
-        UpdateUI();
     }
 
-    void Update()
-    {
-        TimerForSpawn();
-    }
+    private void Update() => _pointController.TimerForSpawn(_gameIsStart, _data, CurrentFactor);
 
-    private void CreateButtonLines(bool isStart, AnimalMiniGameFactor config)
-    {
-        _currentFactor = config;
+    public event Action<bool> ResultMiniGame;
 
+    public void StartMiniGame(bool isStart, AnimalMiniGameFactor config)
+    {
         _gameIsStart = isStart;
+        CurrentFactor = config;
+        _angryScore = CurrentFactor.AngryBarPositionX;
         _barier.gameObject.SetActive(isStart);
         _minigameContainer.SetActive(isStart);
-        _angryScore = _currentFactor.AngryBarPositionX;
-        UpdateUI();
 
+
+        CreateButtonLines(isStart);
+        UpdateUI();
+    }
+
+    private void CreateButtonLines(bool isStart)
+    {
         switch (isStart)
         {
             case true:
@@ -88,39 +93,22 @@ public class MiniGameMain : MonoBehaviour
         {
             _angryScore = 0;
             Debug.Log("Win minigame");
-            CurrentAnimal.AgressionStart(false, _currentFactor);
-            CurrentAnimal.SwitchStatet(AnimalState.Default);
+            ResultMiniGame?.Invoke(true);
         }
         else if (_angryScore >= 1)
         {
             _angryScore = 1;
             Debug.Log("Loose");
-            CurrentAnimal.AgressionStart(false, _currentFactor);
-            CurrentAnimal.SwitchStatet(AnimalState.Default);
+            ResultMiniGame?.Invoke(false);
         }
 
         UpdateUI();
-    }
-
-    private void TimerForSpawn()
-    {
-        if (_gameIsStart)
-        {
-            _timer += _data.SpeedFactorFSpawn * Time.deltaTime;
-            if (_timer >= 1)
-            {
-                _data.SpeedFactorFSpawn = Random.Range(_data.MinPossibleFactor, _data.MaxPossibleFactor);
-                _timer = 0;
-                _pointController.CreatePoint(_currentFactor.ScoreTaked);
-            }
-        }
     }
 
     private void UpdateUI() => _agressiveBar.fillAmount = _angryScore;
 
     void OnDestroy()
     {
-        CurrentAnimal.AnimalAgressiveStart -= CreateButtonLines;
         MiniGamePoint.OnPointResult -= GetPointResult;
         MiniGamePoint.OnPointFinished -= _pointController.RecyclePoint;
     }

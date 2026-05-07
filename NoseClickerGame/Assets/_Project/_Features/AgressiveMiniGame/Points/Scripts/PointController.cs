@@ -3,11 +3,15 @@ using UnityEngine;
 
 public class PointController
 {
-    private List<MiniGamePoint> _freeObjects;
-    private List<MiniGamePoint> _busyObjects;
+    [Header("Links")]
+    private List<MiniGamePoint> _freeObjects = new();
+    private List<MiniGamePoint> _busyObjects = new();
     private GameObject _freeObjectsParent;
     private MiniGamePoint _pointPrefab;
     private Collider2D _barier;
+
+    private float _timer;
+    
 
     public PointController(
         List<MiniGamePoint> freeObj,
@@ -21,7 +25,7 @@ public class PointController
         _barier = barier;
     }
 
-    public void CreatePoint(float angryStrange)
+    public void CreatePoint(AnimalMiniGameFactor config)
     {
         Vector3 spawnPos = Camera.main.ViewportToWorldPoint(new Vector3(1.1f, 0.5f, 10f));
 
@@ -29,8 +33,8 @@ public class PointController
         {
             MiniGamePoint point = Object.Instantiate(_pointPrefab);
             point.transform.SetParent(_freeObjectsParent.transform);
-            point.transform.position = spawnPos;
-            point.Init(_barier.transform.position.x, angryStrange);
+            point.transform.localPosition = spawnPos;
+            point.Init(_barier.transform.position.x, config);
 
             _busyObjects.Add(point);
         }
@@ -38,7 +42,7 @@ public class PointController
         {
             _freeObjects[0].gameObject.SetActive(true);
             _freeObjects[0].transform.position = spawnPos;
-            _freeObjects[0].Init(_barier.transform.position.x, angryStrange);
+            _freeObjects[0].Init(_barier.transform.position.x, config);
             _busyObjects.Add(_freeObjects[0]);
             _freeObjects.RemoveAt(0);
         }
@@ -51,5 +55,19 @@ public class PointController
         point.gameObject.SetActive(false);
 
         _freeObjects.Add(point);
+    }
+
+    public void TimerForSpawn(bool gameStart, MiniGameDataMain data, AnimalMiniGameFactor config)
+    {
+        if (gameStart)
+        {
+            _timer += data.SpeedFactorFSpawn * Time.deltaTime;
+            if (_timer >= 1)
+            {
+                data.SpeedFactorFSpawn = UnityEngine.Random.Range(data.MinPossibleFactor, data.MaxPossibleFactor);
+                _timer = 0;
+                CreatePoint(config);
+            }
+        }
     }
 }

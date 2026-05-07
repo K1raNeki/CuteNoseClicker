@@ -18,6 +18,6 @@ MonoBehaviour:
   InvertPoints:
   - 0.3
   - 0.6
-  MoveSpeedPoint: 6
+  MoveSpeedPoint: 7
   ScoreTaked: 0.2
   Types: 

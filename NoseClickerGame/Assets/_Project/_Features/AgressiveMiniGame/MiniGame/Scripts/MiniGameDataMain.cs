@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "MiniGameData", menuName = "Scriptable Objects/MiniGameData")]
 public class MiniGameDataMain : ScriptableObject

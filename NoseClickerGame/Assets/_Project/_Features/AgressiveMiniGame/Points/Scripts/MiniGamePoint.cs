@@ -7,10 +7,12 @@ public class MiniGamePoint : MonoBehaviour, IClickable
 {
     [Header("Links")]
     private float _failPositionX;
-    private float _scoreCorrect;
     private bool isInit;
-
     SpriteRenderer _renderer;
+
+    [Header("PointSettings")]
+    private float _scoreCorrect;
+    private float _pointSpeed;
     private bool _pointIsWin;
     private bool _pointIsLoose;
 
@@ -30,11 +32,12 @@ public class MiniGamePoint : MonoBehaviour, IClickable
             PointFinished();
     }
 
-    public void Init(float failPos, float scoreCorrect)
+    public void Init(float failPos, AnimalMiniGameFactor config)
     {
         isInit = true;
         _failPositionX = failPos;
-        _scoreCorrect = scoreCorrect;
+        _scoreCorrect = config.ScoreTaked;
+        _pointSpeed = config.MoveSpeedPoint;
     }
 
     public void Interact() => Completed();
@@ -63,7 +66,7 @@ public class MiniGamePoint : MonoBehaviour, IClickable
 
     private void MovePoint()
     {
-        transform.localPosition = new Vector2(transform.localPosition.x - 6f * Time.deltaTime, transform.localPosition.y);
+        transform.localPosition = new Vector2(transform.localPosition.x - _pointSpeed * Time.deltaTime, transform.localPosition.y);
 
         if (transform.localPosition.x <= _failPositionX && !_pointIsLoose && !_pointIsWin)
             Fail();
