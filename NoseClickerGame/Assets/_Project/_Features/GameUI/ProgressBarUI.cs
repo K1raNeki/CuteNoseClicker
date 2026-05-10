@@ -40,7 +40,7 @@ public class ProgressBarUI : MonoBehaviour
                 point.PointImage.color = Color.red;
 
             else
-                point.PointImage.color = CurrentAnimal.IsGameCompleted(config) ? Color.green : Color.grey;
+                point.PointImage.color = CurrentAnimal.Extensions.IsGameCompleted(config) ? Color.green : Color.grey;
         }
     }
 

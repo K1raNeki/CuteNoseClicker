@@ -8,17 +8,17 @@ public class Animal : MonoBehaviour, IClickable
 {
     [Header("Links")]
     public AnimalData Data;
+    public AnimalExtensions Extensions { get; private set; }
     public PolygonCollider2D[] BodyColliders;
     public PolygonCollider2D NoseCollider;
     private Animator _animator;
     private AnimalState _currentState;
 
     [Header("Current Indexes")]
-    [SerializeField] private float _penalty = 0.10f;
-    private float _currentCare;
-    private int _currentMiniGame = -1;
-    private bool[] _isCompletedMiniGame;
-    private AnimalMiniGameFactor[] _sortedMiniGames;
+    public float _currentCare { get; private set; }
+    public int _currentMiniGame = -1;
+    public bool[] IsCompletedMiniGame { get; private set; }
+    public AnimalMiniGameFactor[] SortedMiniGames { get; private set; }
 
 
     private void Awake()
@@ -26,9 +26,11 @@ public class Animal : MonoBehaviour, IClickable
         _animator = GetComponent<Animator>();
         _animator.runtimeAnimatorController = Data.OverrideController;
 
-        _isCompletedMiniGame = new bool[Data.MiniGames.Length];
-        _sortedMiniGames = (AnimalMiniGameFactor[])Data.MiniGames.Clone();
-        Array.Sort(_sortedMiniGames, (x, y) => x.AngryBarPositionX.CompareTo(y.AngryBarPositionX));
+        IsCompletedMiniGame = new bool[Data.MiniGames.Length];
+        SortedMiniGames = (AnimalMiniGameFactor[])Data.MiniGames.Clone();
+        Array.Sort(SortedMiniGames, (x, y) => x.AngryBarPositionX.CompareTo(y.AngryBarPositionX));
+
+        Extensions = new AnimalExtensions(this);
 
         SwitchStatet(AnimalState.Default);
     }
@@ -45,7 +47,7 @@ public class Animal : MonoBehaviour, IClickable
         TakeCare(multiplier);
     }
 
-    public void TakeCare(float takedCare = 1)
+    private void TakeCare(float takedCare = 1)
     {
         switch (_currentState)
         {
@@ -70,15 +72,15 @@ public class Animal : MonoBehaviour, IClickable
     {
         if (_currentCare >= Data.NeedCare)
         {
-            _currentCare = Data.NeedCare;
+            // _currentCare = Data.NeedCare;
             SwitchStatet(AnimalState.Win);
             return;
         }
 
-        for (int i = 0; i < _sortedMiniGames.Length; i++)
+        for (int i = 0; i < SortedMiniGames.Length; i++)
         {
-            if ((_currentCare / Data.NeedCare) >= _sortedMiniGames[i].AngryBarPositionX
-            && !_isCompletedMiniGame[i]
+            if ((_currentCare / Data.NeedCare) >= SortedMiniGames[i].AngryBarPositionX
+            && !IsCompletedMiniGame[i]
             && _currentState != AnimalState.Angry)
             {
                 _currentMiniGame = i;
@@ -91,23 +93,15 @@ public class Animal : MonoBehaviour, IClickable
     public void CompleteActiveMiniGame(bool success)
     {
         if (success && _currentMiniGame != -1)
-            _isCompletedMiniGame[_currentMiniGame] = true;
+            IsCompletedMiniGame[_currentMiniGame] = true;
         else if (!success)
         {
-            _currentCare = Data.NeedCare * _sortedMiniGames[_currentMiniGame].AngryBarPositionX * (1f - _penalty);
+            _currentCare = Data.NeedCare * SortedMiniGames[_currentMiniGame].AngryBarPositionX * (1f - Data.Penalty);
             AnimalTakeCare?.Invoke(_currentCare);
         }
 
         _currentMiniGame = -1;
         SwitchStatet(AnimalState.Default);
-    }
-    public bool IsGameCompleted(AnimalMiniGameFactor config)
-    {
-        int index = Array.IndexOf(_sortedMiniGames, config);
-        if (index != -1)
-            return _isCompletedMiniGame[index];
-
-        return false;
     }
 
     public void AgressionStart(bool isAngry, AnimalMiniGameFactor config)

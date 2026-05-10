@@ -15,6 +15,7 @@ public class AnimalData : ScriptableObject
     [Header("Balance")]
     public float NeedCare;
     public int Attemps = 3;
+    public float Penalty = 0.05f;
 
     [Header("MiniGames")]
     public AnimalMiniGameFactor[] MiniGames;
