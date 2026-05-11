@@ -1,5 +1,4 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -10,11 +9,19 @@ public class MiniGamePoint : MonoBehaviour, IClickable
     private bool isInit;
     SpriteRenderer _renderer;
 
-    [Header("PointSettings")]
+    [Header("PointData")]
+    private PointTypes _pointType;
     private float _scoreCorrect;
     private float _pointSpeed;
     private bool _pointIsWin;
     private bool _pointIsLoose;
+
+    [Header("PointFlags")]
+    private float _lifeTime;
+    private float _waveSyn = 8f;
+    private bool _isDoublePoint;
+    private bool _isHoldPoint;
+    private bool _isFakePoint;
 
 
     void Awake()
@@ -29,49 +36,71 @@ public class MiniGamePoint : MonoBehaviour, IClickable
         MovePoint();
 
         if ((_pointIsLoose || _pointIsWin) && !_renderer.isVisible)
-            PointFinished();
+        {
+            Debug.Log("wefvew");
+            gameObject.SetActive(false);
+            OnPointFinished?.Invoke(this);
+        }
     }
 
     public void Init(float failPos, AnimalMiniGameFactor config)
     {
-        isInit = true;
+        ResetPoint();
         _failPositionX = failPos;
         _scoreCorrect = config.ScoreTaked;
         _pointSpeed = config.MoveSpeedPoint;
+
+        if (config.Types.Length > 0)
+        {
+            int index = UnityEngine.Random.Range(0, config.Types.Length);
+            _pointType = config.Types[index];
+        }
+        else
+            _pointType = PointTypes.Default;
+
     }
 
-    public void Interact() => Completed();
+    public void Interact() => Completed(true);
 
     public static event Action<bool, float> OnPointResult;
     public static event Action<MiniGamePoint> OnPointFinished;
 
-    private void Completed()
+    private void Completed(bool isWin)
     {
-        _pointIsWin = true;
-        OnPointResult?.Invoke(true, _scoreCorrect);
-        _renderer.color = Color.green;
-    }
-    private void Fail()
-    {
-        _pointIsLoose = true;
-        OnPointResult?.Invoke(false, _scoreCorrect);
-        _renderer.color = Color.red;
-    }
-
-    private void PointFinished()
-    {
-        gameObject.SetActive(false);
-        OnPointFinished?.Invoke(this);
+        _pointIsWin = isWin;
+        _pointIsLoose = !isWin;
+        OnPointResult?.Invoke(isWin, _scoreCorrect);
+        _renderer.color = isWin ? Color.green : Color.red;
     }
 
     private void MovePoint()
     {
-        transform.localPosition = new Vector2(transform.localPosition.x - _pointSpeed * Time.deltaTime, transform.localPosition.y);
+        _lifeTime += Time.deltaTime;
 
-        if (transform.localPosition.x <= _failPositionX && !_pointIsLoose && !_pointIsWin)
-            Fail();
+        float xMove = _pointSpeed * Time.deltaTime;
+        float yMove = 0;
+
+        if (_pointType.HasFlag(PointTypes.Wave))
+
+            yMove = Mathf.Cos(_lifeTime * _pointSpeed) * _waveSyn;
+
+        transform.Translate(-xMove, yMove * Time.deltaTime, 0);
+
+        if (transform.localPosition.x < _failPositionX
+            && !_pointIsLoose && !_pointIsWin)
+            Completed(false);
+    }
+
+    private void ResetPoint()
+    {
+        _lifeTime = 0;
+        _pointIsLoose = false;
+        _pointIsWin = false;
+        isInit = true;
+        _renderer.color = Color.white;
     }
 }
+
 [System.Flags]
 public enum PointTypes
 {

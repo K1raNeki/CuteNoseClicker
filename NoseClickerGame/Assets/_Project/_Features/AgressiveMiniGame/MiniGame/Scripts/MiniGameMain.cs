@@ -23,8 +23,6 @@ public class MiniGameMain : MonoBehaviour
     [Header("Settings")]
     private float _angryScore;
     private bool _gameIsStart;
-    private float _timer;
-
 
 
     private void Awake()
@@ -69,7 +67,14 @@ public class MiniGameMain : MonoBehaviour
                 else
                     _currentLine = Instantiate(_data.LinePrefab, _minigameContainer.transform);
 
-                _currentLine.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Camera.main.aspect, _data.LineHight);
+                var parentScale = _minigameContainer.transform.lossyScale;
+                float screenWidth = Camera.main.orthographicSize * 2f * Camera.main.aspect;
+
+                _currentLine.transform.localScale = new Vector2(
+                    screenWidth / parentScale.x,
+                    _data.LineHight / parentScale.y);
+
+                // _currentLine.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Camera.main.aspect, _data.LineHight);
                 break;
 
             case false:
