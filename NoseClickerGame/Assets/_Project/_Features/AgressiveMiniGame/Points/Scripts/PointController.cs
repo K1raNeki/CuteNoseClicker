@@ -61,10 +61,10 @@ public class PointController
     {
         if (gameStart)
         {
-            _timer += data.SpeedFactorFSpawn * Time.deltaTime;
+            _timer += data.TimerForSpawr * Time.deltaTime;
             if (_timer >= 1)
             {
-                data.SpeedFactorFSpawn = UnityEngine.Random.Range(data.MinPossibleFactor, data.MaxPossibleFactor);
+                data.TimerForSpawr = UnityEngine.Random.Range(data.MinPossibleFactor, data.MaxPossibleFactor);
                 _timer = 0;
                 CreatePoint(config);
             }

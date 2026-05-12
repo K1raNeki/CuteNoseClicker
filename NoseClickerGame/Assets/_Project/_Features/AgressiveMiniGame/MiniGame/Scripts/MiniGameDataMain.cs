@@ -4,7 +4,7 @@ using UnityEngine;
 public class MiniGameDataMain : ScriptableObject
 {
     [Header("Spawn")]
-    public float SpeedFactorFSpawn = 1f;
+    public float TimerForSpawr =1;
     public float MinPossibleFactor = 0.9f;
     public float MaxPossibleFactor = 3.2f;
 

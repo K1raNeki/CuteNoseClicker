@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 184966ed492c64f31823dedc41cc4f6c, type: 3}
+  m_Name: MultyClick
+  m_EditorClassIdentifier: Assembly-CSharp::UpgrageData
+  Type: 0
+  Name: "\u0428\u0430\u043D\u0441 \u041C\u0443\u043B\u044C\u0442\u0438\u043A\u043B\u0438\u043A\u0430"
+  Prices: 
+  Values: 000000000f000000190000002300000032000000

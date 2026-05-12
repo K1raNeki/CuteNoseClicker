@@ -4,10 +4,18 @@ using UnityEngine.InputSystem;
 public class PlayerClick : MonoBehaviour
 {
     [Header("Links")]
+    public static PlayerClick Instance { get; private set; }
     private PlayerInput _inputSys;
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        Instance = this;
+
         _inputSys = new PlayerInput();
     }
 

@@ -9,14 +9,17 @@ public class Animal : MonoBehaviour, IClickable
     [Header("Links")]
     public AnimalData Data;
     public AnimalExtensions Extensions { get; private set; }
+    [HideInInspector] public GlobalRates Rates;
+
+    [Header("Body")]
     public PolygonCollider2D[] BodyColliders;
     public PolygonCollider2D NoseCollider;
     private Animator _animator;
     private AnimalState _currentState;
 
     [Header("Current Indexes")]
-    public float _currentCare { get; private set; }
-    public int _currentMiniGame = -1;
+    private float _currentCare;
+    private int _currentMiniGame = -1;
     public bool[] IsCompletedMiniGame { get; private set; }
     public AnimalMiniGameFactor[] SortedMiniGames { get; private set; }
 

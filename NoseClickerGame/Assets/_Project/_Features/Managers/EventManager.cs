@@ -1,12 +1,19 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class EventManager : MonoBehaviour
 {
-    [Header("Links")]
+    [Header("LinksMain")]
     public Animal CurrentAnimal;
-    public ProgressBarUI ProgressBarUI;
     public MiniGameMain MiniGameMain;
+
+    [Header("LinksUI")]
+    public ProgressBarUI ProgressBarUI;
     public HealthPointsUI HealthPointsUI;
+    public UpgradeButtons UpgradeButtons;
+
+    [Header("LinksManagers")]
+    public GlobalRates GlobalRates;
+
 
     private static bool _exists;
 
@@ -24,18 +31,18 @@ public class GameManager : MonoBehaviour
         Init();
     }
 
-    private void Start()
-    {
-        CurrentAnimal.AnimalAgressiveStart += StartMiniGame;
-        MiniGameMain.ResultMiniGame += MiniGameEnd;
-        HealthPointsUI.HeelthEnded += LooseGame;
-    }
-
     private void Init()
     {
+        CurrentAnimal.Rates = GlobalRates;
+
         ProgressBarUI.CurrentAnimal = CurrentAnimal;
         MiniGameMain.CurrentAnimal = CurrentAnimal;
         HealthPointsUI.CurrentAnimal = CurrentAnimal;
+
+        CurrentAnimal.AnimalAgressiveStart += StartMiniGame;
+        MiniGameMain.ResultMiniGame += MiniGameEnd;
+        HealthPointsUI.HeelthEnded += LooseGame;
+        UpgradeButtons.OnUpgrade += GlobalRates.GetUpgrade;
     }
 
     private void StartMiniGame(bool isStart, AnimalMiniGameFactor config)

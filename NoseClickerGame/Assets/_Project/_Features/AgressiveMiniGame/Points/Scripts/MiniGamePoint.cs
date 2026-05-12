@@ -7,7 +7,7 @@ public class MiniGamePoint : MonoBehaviour, IClickable
     [Header("Links")]
     private float _failPositionX;
     private bool isInit;
-    SpriteRenderer _renderer;
+    private SpriteRenderer _renderer;
 
     [Header("PointData")]
     private PointTypes _pointType;
@@ -19,9 +19,10 @@ public class MiniGamePoint : MonoBehaviour, IClickable
     [Header("PointFlags")]
     private float _lifeTime;
     private float _waveSyn = 8f;
-    private bool _isDoublePoint;
-    private bool _isHoldPoint;
-    private bool _isFakePoint;
+    private bool _doublePointClick;
+    private bool _isHolding;
+    private float _holdPointTimer;
+    private float _neededHoldTime = 0.3f;
 
 
     void Awake()
@@ -32,6 +33,22 @@ public class MiniGamePoint : MonoBehaviour, IClickable
     void Update()
     {
         if (!isInit) return;
+
+        if (_isHolding
+        && !_pointIsLoose && !_pointIsWin)
+        {
+            if (PlayerClick.Instance.IsHoldClick())
+            {
+                _holdPointTimer += Time.deltaTime;
+                if (_holdPointTimer >= _neededHoldTime)
+                    Completed(!_pointType.HasFlag(PointTypes.Fake));
+            }
+            else
+            {
+                _holdPointTimer = 0;
+                _isHolding = false;
+            }
+        }
 
         MovePoint();
 
@@ -60,39 +77,53 @@ public class MiniGamePoint : MonoBehaviour, IClickable
 
     }
 
-    public void Interact() => Completed(true);
+    public void Interact() => Completed(!_pointType.HasFlag(PointTypes.Fake));
 
     public static event Action<bool, float> OnPointResult;
     public static event Action<MiniGamePoint> OnPointFinished;
 
     private void Completed(bool isWin)
     {
+        if (isWin && _pointType.HasFlag(PointTypes.Double) && !_doublePointClick)
+        {
+            _doublePointClick = true;
+            return;
+        }
+        if (isWin && _pointType.HasFlag(PointTypes.Hold) && !_isHolding)
+        {
+            _isHolding = true;
+            return;
+        }
+
         _pointIsWin = isWin;
         _pointIsLoose = !isWin;
         OnPointResult?.Invoke(isWin, _scoreCorrect);
         _renderer.color = isWin ? Color.green : Color.red;
+
     }
 
     private void MovePoint()
     {
         _lifeTime += Time.deltaTime;
-
         float xMove = _pointSpeed * Time.deltaTime;
         float yMove = 0;
 
         if (_pointType.HasFlag(PointTypes.Wave))
-
             yMove = Mathf.Cos(_lifeTime * _pointSpeed) * _waveSyn;
 
         transform.Translate(-xMove, yMove * Time.deltaTime, 0);
 
         if (transform.localPosition.x < _failPositionX
+            && !_pointType.HasFlag(PointTypes.Fake)
             && !_pointIsLoose && !_pointIsWin)
             Completed(false);
     }
 
     private void ResetPoint()
     {
+        _isHolding = false;
+        _holdPointTimer = 0;
+        _doublePointClick = false;
         _lifeTime = 0;
         _pointIsLoose = false;
         _pointIsWin = false;
