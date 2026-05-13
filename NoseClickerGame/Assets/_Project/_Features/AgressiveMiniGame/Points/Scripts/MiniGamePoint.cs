@@ -54,7 +54,6 @@ public class MiniGamePoint : MonoBehaviour, IClickable
 
         if ((_pointIsLoose || _pointIsWin) && !_renderer.isVisible)
         {
-            Debug.Log("wefvew");
             gameObject.SetActive(false);
             OnPointFinished?.Invoke(this);
         }

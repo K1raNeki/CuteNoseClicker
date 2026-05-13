@@ -10,6 +10,7 @@ public class Animal : MonoBehaviour, IClickable
     public AnimalData Data;
     public AnimalExtensions Extensions { get; private set; }
     [HideInInspector] public GlobalRates Rates;
+    private float _currentCare;
 
     [Header("Body")]
     public PolygonCollider2D[] BodyColliders;
@@ -18,7 +19,8 @@ public class Animal : MonoBehaviour, IClickable
     private AnimalState _currentState;
 
     [Header("Current Indexes")]
-    private float _currentCare;
+    private float _noseMultycare = 1.5f;
+    [SerializeField] private float _multyClickDuration = 0.2f;
     private int _currentMiniGame = -1;
     public bool[] IsCompletedMiniGame { get; private set; }
     public AnimalMiniGameFactor[] SortedMiniGames { get; private set; }
@@ -38,6 +40,15 @@ public class Animal : MonoBehaviour, IClickable
         SwitchStatet(AnimalState.Default);
     }
 
+    private void Update()
+    {
+        if (Extensions.AutoClickSpawnFlag())
+        {
+            Debug.Log("AutoTake Care");
+            TakeCare(Rates.TakedCare);
+        }
+    }
+
     public event Action<float> AnimalTakeCare;
     public event Action<bool, AnimalMiniGameFactor> AnimalAgressiveStart;
 
@@ -45,12 +56,14 @@ public class Animal : MonoBehaviour, IClickable
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-        float multiplier = NoseCollider.OverlapPoint(mousePos) ? 2f : 1f;
+        float multipierValue = _noseMultycare * Rates.TakedCare;
+        float takedCare = NoseCollider.OverlapPoint(mousePos) ? multipierValue : Rates.TakedCare;
 
-        TakeCare(multiplier);
+        // TakeCare(takedCare);
+        StartCoroutine(MultyCare(takedCare, Rates.RollMultyClick()));
     }
 
-    private void TakeCare(float takedCare = 1)
+    private void TakeCare(float takedCare)
     {
         switch (_currentState)
         {
@@ -65,17 +78,18 @@ public class Animal : MonoBehaviour, IClickable
         }
 
         _currentCare = Math.Clamp(_currentCare + takedCare, 0, Data.NeedCare);
+        _currentCare += Rates.TakedCare * Extensions.GetCriticalCare();
 
         CheckedCare();
 
         AnimalTakeCare?.Invoke(_currentCare);
-        Debug.Log($"У {Data.Name} набито {_currentCare}/{Data.NeedCare}");
+        // Debug.Log($"У {Data.Name} набито {_currentCare}/{Data.NeedCare}");
     }
     private void CheckedCare()
     {
         if (_currentCare >= Data.NeedCare)
         {
-            // _currentCare = Data.NeedCare;
+            _currentCare = Data.NeedCare;
             SwitchStatet(AnimalState.Win);
             return;
         }
@@ -107,12 +121,7 @@ public class Animal : MonoBehaviour, IClickable
         SwitchStatet(AnimalState.Default);
     }
 
-    public void AgressionStart(bool isAngry, AnimalMiniGameFactor config)
-    {
-        SwitchStatet(isAngry ? AnimalState.Angry : AnimalState.Default);
-
-        AnimalAgressiveStart?.Invoke(isAngry, config);
-    }
+    public void AgressionStart(bool isAngry, AnimalMiniGameFactor config) => Extensions.AgressionStart(isAngry, config, AnimalAgressiveStart);
 
     public void SwitchStatet(AnimalState state)
     {
@@ -129,6 +138,14 @@ public class Animal : MonoBehaviour, IClickable
         _animator.SetTrigger(state.ToString());
     }
 
+    private IEnumerator MultyCare(float takedCare, float count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            TakeCare(takedCare);
+            yield return new WaitForSeconds(_multyClickDuration);
+        }
+    }
 }
 
 public enum AnimalState { Default, Angry, Win };

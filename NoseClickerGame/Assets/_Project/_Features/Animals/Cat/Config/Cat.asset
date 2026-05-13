@@ -16,8 +16,8 @@ MonoBehaviour:
   Name: "\u041A\u043E\u0442\u0435\u043D\u043E\u043A"
   Icon: {fileID: -6686330998519750642, guid: 84d3cf1fe53484672848d2cbb7798be4, type: 3}
   OverrideController: {fileID: 22100000, guid: 4651403ff532649cfb69eeb23226ce71, type: 2}
-  NeedCare: 10
-  Attemps: 2
+  NeedCare: 1000
+  Attemps: 4
   Penalty: 0.05
   MiniGames:
   - {fileID: 11400000, guid: 4aa568a0a3e214bd1998f7f18dbef4e8, type: 2}

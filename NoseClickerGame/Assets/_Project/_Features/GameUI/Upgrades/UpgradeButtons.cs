@@ -23,14 +23,16 @@ public class UpgradeButtons : MonoBehaviour
 
     public void UpdateState(UpgradeButtonUI button)
     {
-        if (button.Type == UpgradeType.Coockie)
-        {
-            GetCoockie();
-            return;
-        }
-
         foreach (var entry in _upgradesMap)
         {
+            if (entry.Key.Type == UpgradeType.Coockie)
+            {
+                _upgradesMap[entry.Key]++;
+
+                button.UpdateButton(_upgradesMap[entry.Key], 1);
+                return;
+            }
+
             if (entry.Key.Type == button.Type)
             {
                 if (entry.Value >= entry.Key.Values.Length - 1)
@@ -48,24 +50,31 @@ public class UpgradeButtons : MonoBehaviour
         }
     }
 
-    public void GetCoockie() => Debug.Log("Penis 4");
-
     private void Init()
     {
+        _upgradesMap.Clear(); ;
+        foreach (UpgrageData data in _upgradesData)
+            _upgradesMap.Add(data, 0);
+
         SetupButton(MultyClickB, UpgradeType.MultyClick);
         SetupButton(CritClickB, UpgradeType.CritClick);
         SetupButton(AutoClickB, UpgradeType.AutoClick);
         SetupButton(CoockieB, UpgradeType.Coockie);
-
-        _upgradesMap.Clear();;
-        foreach (UpgrageData data in _upgradesData)
-            _upgradesMap.Add(data, 0);
-
     }
     private void SetupButton(UpgradeButtonUI ui, UpgradeType type)
     {
         ui.Type = type;
         ui.ThisButton.onClick.AddListener(() => UpdateState(ui));
+
+        foreach (var entry in _upgradesMap)
+        {
+            if (entry.Key.Type == type)
+            {
+                ui.UpdateButton(entry.Key.Values[0], 0, entry.Key.Name);
+                OnUpgrade?.Invoke(ui.Type, entry.Key.Values[0]);
+                break;
+            }
+        }
     }
 }
 public enum UpgradeType

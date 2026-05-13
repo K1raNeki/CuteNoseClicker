@@ -4,31 +4,36 @@ using UnityEngine;
 public class GlobalRates
 {
     [Header("BaseStates")]
-    public float TakedCare { get; private set; } // in a animal
+    public float TakedCare { get; private set; } = 1f; // in a animal
 
     [Header("UpgradesStates")]
     public float MultyClickChanse { get; private set; }
-    private int _maxCombo = 10;
+    private readonly int _maxCombo = 10;
     public float CriticalCare { get; private set; }
+    private readonly int _critChanse = 30;
     public float AutoClickDelta { get; private set; }
 
     public int RollMultyClick()
     {
         int round = 1;
-        float currentChange = MultyClickChanse;
 
         for (int i = 0; i <= _maxCombo; i++)
         {
-            if (Random.Range(0, 100) <= currentChange)
-            {
+            if (Random.Range(0.01f, 100) <= MultyClickChanse)
                 round++;
-                currentChange *= 0.5f;
-            }
             else
                 break;
         }
 
         return round;
+    }
+
+    public bool WillBeCrit()
+    {
+        if (Random.Range(0, 100) <= _critChanse)
+            return true;
+        else
+            return false;
     }
 
     public void GetUpgrade(UpgradeType type, float value)
@@ -45,6 +50,10 @@ public class GlobalRates
 
             case UpgradeType.MultyClick:
                 MultyClickChanse = value;
+                break;
+
+            default:
+                Debug.Log("Прокачено что то кроме 3х базовых статов или печенье");
                 break;
         }
     }

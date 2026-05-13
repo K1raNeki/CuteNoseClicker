@@ -97,13 +97,13 @@ public class MiniGameMain : MonoBehaviour
         if (Mathf.Round(_angryScore * 100) / 100 <= 0)
         {
             _angryScore = 0;
-            Debug.Log("Win minigame");
+            // Debug.Log("Win minigame");
             ResultMiniGame?.Invoke(true);
         }
         else if (_angryScore >= 1)
         {
             _angryScore = 1;
-            Debug.Log("Loose");
+            // Debug.Log("Loose");
             ResultMiniGame?.Invoke(false);
         }
 
