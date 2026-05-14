@@ -50,6 +50,8 @@ public class UpgradeButtons : MonoBehaviour
         }
     }
 
+    public void HideButtonContainer(bool hide) => gameObject.SetActive(hide);
+
     private void Init()
     {
         _upgradesMap.Clear(); ;

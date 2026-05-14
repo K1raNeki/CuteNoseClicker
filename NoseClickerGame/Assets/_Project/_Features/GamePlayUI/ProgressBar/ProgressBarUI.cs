@@ -18,8 +18,6 @@ public class ProgressBarUI : MonoBehaviour
 
     private void Start()
     {
-        CurrentAnimal.AnimalTakeCare += UpdateUIBarProgress;
-        CurrentAnimal.AnimalAgressiveStart += UpdateAngryPointCompleted;
         UpdateUIBarProgress(0);
         SpawnAngryPoints();
     }
@@ -28,7 +26,7 @@ public class ProgressBarUI : MonoBehaviour
 
     public void UpdateUIBarProgress(float impact) => _progressBar.fillAmount = impact / CurrentAnimal.Data.NeedCare;
 
-    private void UpdateAngryPointCompleted(bool isAngry, AnimalMiniGameFactor config)
+    public void UpdateAngryPointCompleted(bool isAngry, AnimalMiniGameFactor config)
     {
         if (config == null) return;
 
