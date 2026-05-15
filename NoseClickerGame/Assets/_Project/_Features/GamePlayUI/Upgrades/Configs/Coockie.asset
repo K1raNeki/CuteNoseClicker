@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgrageData
   Type: 3
   Name: "\u041F\u0435\u0447\u0435\u043D\u044C\u043A\u0430"
-  Prices: 00000000
+  Prices:
+  - 0
+  - 1
   Values:
   - 0

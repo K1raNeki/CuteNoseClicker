@@ -8,6 +8,7 @@ public class AnimalData : ScriptableObject
     public string ID;
     public string Name;
     public Sprite Icon;
+    public GameObject Prefab;
 
     [Header("Anim")]
     public AnimatorOverrideController OverrideController;

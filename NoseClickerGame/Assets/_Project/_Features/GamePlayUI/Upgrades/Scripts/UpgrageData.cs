@@ -7,6 +7,6 @@ public class UpgrageData : ScriptableObject
     [Header("Data")]
     public UpgradeType Type;
     public string Name;
-    public int[] Prices;
+    public float[] Prices;
     public float[] Values;
 }

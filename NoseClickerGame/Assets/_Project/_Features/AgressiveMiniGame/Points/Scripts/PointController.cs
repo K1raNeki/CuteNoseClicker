@@ -25,9 +25,10 @@ public class PointController
         _barier = barier;
     }
 
-    public void CreatePoint(AnimalMiniGameFactor config)
+    public void CreatePoint(AnimalMiniGameFactor config, bool isInvert)
     {
-        Vector3 spawnPos = Camera.main.ViewportToWorldPoint(new Vector3(1.1f, 0.5f, 10f));
+        float xSpawnPos = isInvert ? -1.1f : 1.1f;
+        Vector3 spawnPos = Camera.main.ViewportToWorldPoint(new Vector3(xSpawnPos, 0.5f, 10f));
 
         if (_freeObjects.Count == 0)
         {
@@ -57,7 +58,7 @@ public class PointController
         _freeObjects.Add(point);
     }
 
-    public void TimerForSpawn(bool gameStart, MiniGameDataMain data, AnimalMiniGameFactor config)
+    public void TimerForSpawn(bool gameStart, MiniGameDataMain data, AnimalMiniGameFactor config, bool invert)
     {
         if (gameStart)
         {
@@ -66,7 +67,7 @@ public class PointController
             {
                 data.TimerForSpawr = UnityEngine.Random.Range(data.MinPossibleFactor, data.MaxPossibleFactor);
                 _timer = 0;
-                CreatePoint(config);
+                CreatePoint(config, invert);
             }
         }
     }

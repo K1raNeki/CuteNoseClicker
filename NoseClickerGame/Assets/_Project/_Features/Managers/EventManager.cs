@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EventManager : MonoBehaviour
 {
@@ -16,26 +18,22 @@ public class EventManager : MonoBehaviour
     public GlobalRates GlobalRates;
     public PaymentsManager PaymentsManager;
 
+    private static EventManager _current;
 
-    // private static bool _exists;
-    private static EventManager current;
+
+    public static Action<bool> OnOpenMainsContainer;
 
     private void Awake()
     {
-        if (current != null)
-            Destroy(current.gameObject);
-
-        // if (_exists)
-        // {
-        //     Destroy(gameObject);
-        //     return;
-        // }
-        // _exists = true;
+        if (_current != null)
+            Destroy(_current.gameObject);
         DontDestroyOnLoad(gameObject);
+
+        PlayMainButton.OnStartGameWithCurrentAnimal += SetupAnimal;
 
         Init();
     }
-
+    private void SetupAnimal(Animal animal) => CurrentAnimal = animal;
     private void Init()
     {
         CurrentAnimal.AnimalAgressiveStart += StartMiniGame;
@@ -47,20 +45,20 @@ public class EventManager : MonoBehaviour
         HealthPointsUI.CurrentAnimal = CurrentAnimal;
         CurrentAnimal.Rates = GlobalRates;
 
-        UpgradeButtons.OnUpgrade += GlobalRates.GetUpgrade;
         CurrentAnimal.AnimalTakeCare += ProgressBarUI.UpdateUIBarProgress;
-        CurrentAnimal.AnimalTakeCare += PaymentsManager.AddLoveCurrency;
-        PaymentsManager.OnLoveCurrencyTransaction += CurrencyUI.UpdateLoveCurrencyValueUI;
-        PaymentsManager.OnKeysTransaction += CurrencyUI.UpdateKeysValueUI;
-        CurrencyUI.UpdateKeysValueUI(PaymentsManager.Keys); CurrencyUI.UpdateLoveCurrencyValueUI(PaymentsManager.LoveCurrency);
+        CurrentAnimal.CurrentTakedCare += PaymentsManager.AddLoveCurrency;
         CurrentAnimal.AnimalAgressiveStart += ProgressBarUI.UpdateAngryPointCompleted;
+        // UpgradeButtons.OnUpgrade += GlobalRates.GetUpgrade;
+        // PaymentsManager.OnLoveCurrencyTransaction += CurrencyUI.UpdateLoveCurrencyValueUI;
+        // PaymentsManager.OnKeysTransaction += CurrencyUI.UpdateKeysValueUI;
+        // CurrencyUI.UpdateKeysValueUI(PaymentsManager.Keys); CurrencyUI.UpdateLoveCurrencyValueUI(PaymentsManager.LoveCurrency);
     }
 
     private void StartMiniGame(bool isStart, AnimalMiniGameFactor config)
     {
         MiniGameMain.StartMiniGame(isStart, config);
         ProgressBarUI.HideBaseProgress(isStart);
-        UpgradeButtons.HideButtonContainer(isStart);
+        UpgradeButtons.HideButtonContainer(!isStart);
     }
 
     private void MiniGameEnd(bool result)
@@ -80,4 +78,34 @@ public class EventManager : MonoBehaviour
         CurrentAnimal.SwitchStatet(AnimalState.Angry);
         Debug.Log("pososal");
     }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        PaymentsManager.ResetEvent();
+        UpgradeButtons.ResetEvent();
+
+        CurrencyUI = FindAnyObjectByType<CurrencyUI>();
+        UpgradeButtons = FindAnyObjectByType<UpgradeButtons>();
+
+        if (CurrencyUI != null)
+        {
+            PaymentsManager.OnLoveCurrencyTransaction += CurrencyUI.UpdateLoveCurrencyValueUI;
+            PaymentsManager.OnKeysTransaction += CurrencyUI.UpdateKeysValueUI;
+
+            CurrencyUI.UpdateLoveCurrencyValueUI(PaymentsManager.LoveCurrency);
+            CurrencyUI.UpdateKeysValueUI(PaymentsManager.Keys);
+        }
+        else
+            Debug.Log("На сцене нет Канваза Валюты");
+
+        if (UpgradeButtons != null)
+        {
+            UpgradeButtons.PaymentsManager = PaymentsManager;
+            UpgradeButtons.OnUpgrade += GlobalRates.GetUpgrade;
+        }
+        else
+            Debug.Log("На сцене нет Кнопок апгрейда");
+    }
+    private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
+    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
 }

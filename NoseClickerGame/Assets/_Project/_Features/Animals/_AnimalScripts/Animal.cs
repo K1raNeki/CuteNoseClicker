@@ -50,6 +50,7 @@ public class Animal : MonoBehaviour, IClickable
     }
 
     public event Action<float> AnimalTakeCare;
+    public event Action<float> CurrentTakedCare;
     public event Action<bool, AnimalMiniGameFactor> AnimalAgressiveStart;
 
     public void Interact()
@@ -59,7 +60,6 @@ public class Animal : MonoBehaviour, IClickable
         float multipierValue = _noseMultycare * Rates.TakedCare;
         float takedCare = NoseCollider.OverlapPoint(mousePos) ? multipierValue : Rates.TakedCare;
 
-        // TakeCare(takedCare);
         StartCoroutine(MultyCare(takedCare, Rates.RollMultyClick()));
     }
 
@@ -77,8 +77,13 @@ public class Animal : MonoBehaviour, IClickable
                 return;
         }
 
-        _currentCare = Math.Clamp(_currentCare + takedCare, 0, Data.NeedCare);
-        _currentCare += Rates.TakedCare * Extensions.GetCriticalCare();
+        float randomCrit = takedCare * Extensions.GetCriticalCare();
+        float currentTakedCare = randomCrit + takedCare;
+        _currentCare = Math.Clamp(_currentCare + currentTakedCare ,
+            0,
+            Data.NeedCare);
+
+        CurrentTakedCare?.Invoke(currentTakedCare);
 
         CheckedCare();
 

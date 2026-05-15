@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimalMiniGameFactor
   AngryBarPositionX: 0.7
   StartAngerFill: 0.4
-  CanInvertLine: 1
+  CanInvertLine: 0
   InvertPoints:
   - 0.3
   - 0.6

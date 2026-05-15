@@ -15,8 +15,9 @@ MonoBehaviour:
   ID: Cat
   Name: "\u041A\u043E\u0442\u0435\u043D\u043E\u043A"
   Icon: {fileID: -6686330998519750642, guid: 84d3cf1fe53484672848d2cbb7798be4, type: 3}
+  Prefab: {fileID: 6485179466405487786, guid: 997cfc982c8a74b288b52c21c3868277, type: 3}
   OverrideController: {fileID: 22100000, guid: 4651403ff532649cfb69eeb23226ce71, type: 2}
-  NeedCare: 1000
+  NeedCare: 50
   Attemps: 4
   Penalty: 0.05
   MiniGames:

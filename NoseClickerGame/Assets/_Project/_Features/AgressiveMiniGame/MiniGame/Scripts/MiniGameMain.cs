@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,21 +10,24 @@ public class MiniGameMain : MonoBehaviour
     [Header("Links")]
     [HideInInspector] public Animal CurrentAnimal;
     [HideInInspector] public AnimalMiniGameFactor CurrentFactor;
-    [SerializeField] private MiniGameDataMain _data;
-    [SerializeField] private GameObject _minigameContainer;
+    public MiniGameDataMain Data;
+    public GameObject MinigameContainer;
     [SerializeField] private Collider2D _barier;
     [SerializeField] private Image _agressiveBar;
-    private GameObject _currentLine;
+    public GameObject CurrentLine;
 
     [Header("ObjectPoolin")]
-    PointController _pointController;
-    private List<MiniGamePoint> _busyObjects = new List<MiniGamePoint>();
-    [SerializeField] private List<MiniGamePoint> _freeObjects = new List<MiniGamePoint>();
-    [SerializeField] private GameObject _freeObjectsParent;
+    private PointController _pointController;
+    [HideInInspector] public List<MiniGamePoint> _busyObjects = new();
+    public List<MiniGamePoint> _freeObjects = new();
+    public GameObject _freeObjectsParent;
 
     [Header("Settings")]
+    private MiniGameLineController _miniGameLineController;
     private float _angryScore;
-    private bool _gameIsStart;
+    [HideInInspector] public bool GameIsStart;
+    [HideInInspector] public bool LineInvert;
+    [HideInInspector] public List<bool> _completedInvertPoint = new();
 
 
     private void Awake()
@@ -30,64 +35,34 @@ public class MiniGameMain : MonoBehaviour
         _pointController = new PointController(
             _freeObjects,
             _busyObjects,
-            _data.PointPrefab,
+            Data.PointPrefab,
             _barier);
+
+        _miniGameLineController = new MiniGameLineController(this);
     }
 
     private void Start()
     {
+        MinigameContainer.SetActive(false);
         MiniGamePoint.OnPointResult += GetPointResult;
         MiniGamePoint.OnPointFinished += _pointController.RecyclePoint;
     }
 
-    private void Update() => _pointController.TimerForSpawn(_gameIsStart, _data, CurrentFactor);
+    private void Update() => _pointController.TimerForSpawn(GameIsStart, Data, CurrentFactor, LineInvert);
 
     public event Action<bool> ResultMiniGame;
 
     public void StartMiniGame(bool isStart, AnimalMiniGameFactor config)
     {
-        _gameIsStart = isStart;
+        LineInvert = false;
+        GameIsStart = isStart;
         CurrentFactor = config;
         _angryScore = CurrentFactor.AngryBarPositionX;
         _barier.gameObject.SetActive(isStart);
-        _minigameContainer.SetActive(isStart);
+        MinigameContainer.SetActive(isStart);
 
-
-        CreateButtonLines(isStart);
+        _miniGameLineController.CreateButtonLines(isStart);
         UpdateUI();
-    }
-
-    private void CreateButtonLines(bool isStart)
-    {
-        switch (isStart)
-        {
-            case true:
-                if (_currentLine != null)
-                    _currentLine.SetActive(true);
-                else
-                    _currentLine = Instantiate(_data.LinePrefab, _minigameContainer.transform);
-
-                var parentScale = _minigameContainer.transform.lossyScale;
-                float screenWidth = Camera.main.orthographicSize * 2f * Camera.main.aspect;
-
-                _currentLine.transform.localScale = new Vector2(
-                    screenWidth / parentScale.x,
-                    _data.LineHight / parentScale.y);
-
-                // _currentLine.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Camera.main.aspect, _data.LineHight);
-                break;
-
-            case false:
-                _currentLine.SetActive(false);
-
-                foreach (MiniGamePoint point in _busyObjects)
-                {
-                    _freeObjects.Add(point);
-                    point.gameObject.SetActive(false);
-                }
-                _busyObjects.Clear();
-                break;
-        }
     }
 
     private void GetPointResult(bool positive, float score)
@@ -110,7 +85,25 @@ public class MiniGameMain : MonoBehaviour
         UpdateUI();
     }
 
-    private void UpdateUI() => _agressiveBar.fillAmount = _angryScore;
+    private void UpdateUI()
+    {
+        _agressiveBar.fillAmount = _angryScore;
+
+        if (!CurrentFactor.CanInvertLine)
+            return;
+        for (int i = 0; i < CurrentFactor.InvertPoints.Length; i++)
+        {
+            float tempScore = Mathf.Round(_angryScore * 100) / 100;
+            float invertPoint = CurrentFactor.InvertPoints[i];
+            if (tempScore >= invertPoint
+                && ((tempScore - invertPoint) <= CurrentFactor.ScoreTaked)
+                && !_completedInvertPoint[i])
+            {
+                _completedInvertPoint[i] = true;
+                StartCoroutine(_miniGameLineController.InvertLine(1, _barier));
+            }
+        }
+    }
 
     void OnDestroy()
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -17,6 +18,7 @@ public class MiniGamePoint : MonoBehaviour, IClickable
     private bool _pointIsLoose;
 
     [Header("PointFlags")]
+    private bool _isInvert;
     private float _lifeTime;
     private float _waveSyn = 8f;
     private bool _doublePointClick;
@@ -81,6 +83,17 @@ public class MiniGamePoint : MonoBehaviour, IClickable
     public static event Action<bool, float> OnPointResult;
     public static event Action<MiniGamePoint> OnPointFinished;
 
+    public IEnumerator InvertPoint(float dur)
+    {
+        _isInvert = !_isInvert;  
+        _pointSpeed = -_pointSpeed;
+        isInit = false;
+
+        yield return new WaitForSeconds(dur);
+        
+        isInit = true;
+    }
+
     private void Completed(bool isWin)
     {
         if (isWin && _pointType.HasFlag(PointTypes.Double) && !_doublePointClick)
@@ -120,6 +133,7 @@ public class MiniGamePoint : MonoBehaviour, IClickable
 
     private void ResetPoint()
     {
+        _isInvert = false;
         _isHolding = false;
         _holdPointTimer = 0;
         _doublePointClick = false;

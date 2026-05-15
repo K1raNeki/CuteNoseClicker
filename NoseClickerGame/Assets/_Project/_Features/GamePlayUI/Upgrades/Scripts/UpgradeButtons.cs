@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class UpgradeButtons : MonoBehaviour
 {
+    [HideInInspector] public PaymentsManager PaymentsManager;
+
     [Header("LinksButtons")]
     [SerializeField] private UpgradeButtonUI MultyClickB;
     [SerializeField] private UpgradeButtonUI CritClickB;
@@ -14,7 +16,6 @@ public class UpgradeButtons : MonoBehaviour
     [Header("Counters")]
     private Dictionary<UpgrageData, int> _upgradesMap = new();
     [SerializeField] private UpgrageData[] _upgradesData;
-    private int _cookiesCount;
 
 
     public event Action<UpgradeType, float> OnUpgrade;
@@ -27,9 +28,19 @@ public class UpgradeButtons : MonoBehaviour
         {
             if (entry.Key.Type == UpgradeType.Coockie)
             {
+                float price = entry.Key.Prices[1];
+                if (PaymentsManager.CanPay(price, PaymentsManager.LoveCurrency))
+                {
+                    PaymentsManager.SpendLoveCurrency(price);
+                }
+                else
+                {
+                    Debug.Log("мало деняк");
+                    return;
+                }
                 _upgradesMap[entry.Key]++;
 
-                button.UpdateButton(_upgradesMap[entry.Key], 1);
+                button.UpdateButton(price, _upgradesMap[entry.Key], 1);
                 return;
             }
 
@@ -40,10 +51,22 @@ public class UpgradeButtons : MonoBehaviour
                     Debug.Log($"Max level for {button.Type}");
                     return;
                 }
+
+                float price = entry.Key.Prices[_upgradesMap[entry.Key]];
+                if (PaymentsManager.CanPay(price, PaymentsManager.LoveCurrency))
+                {
+                    PaymentsManager.SpendLoveCurrency(price);
+                }
+                else
+                {
+                    Debug.Log("мало деняк");
+                    return;
+                }
                 _upgradesMap[entry.Key]++;
 
+                float newPrice = entry.Key.Prices[_upgradesMap[entry.Key]];
                 float newValue = entry.Key.Values[_upgradesMap[entry.Key]];
-                button.UpdateButton(newValue, entry.Value);
+                button.UpdateButton(newPrice, newValue, entry.Value);
                 OnUpgrade?.Invoke(button.Type, newValue);
                 return;
             }
@@ -51,6 +74,8 @@ public class UpgradeButtons : MonoBehaviour
     }
 
     public void HideButtonContainer(bool hide) => gameObject.SetActive(hide);
+
+    public void ResetEvent() => OnUpgrade = null;
 
     private void Init()
     {
@@ -72,7 +97,7 @@ public class UpgradeButtons : MonoBehaviour
         {
             if (entry.Key.Type == type)
             {
-                ui.UpdateButton(entry.Key.Values[0], 0, entry.Key.Name);
+                ui.UpdateButton(entry.Key.Prices[0], entry.Key.Values[0], 0, entry.Key.Name);
                 OnUpgrade?.Invoke(ui.Type, entry.Key.Values[0]);
                 break;
             }

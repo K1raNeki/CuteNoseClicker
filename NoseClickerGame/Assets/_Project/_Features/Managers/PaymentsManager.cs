@@ -19,7 +19,7 @@ public class PaymentsManager
     public void SpendLoveCurrency(float price)
     {
         if (CanPay(price, LoveCurrency))
-            LoveCurrency += price;
+            LoveCurrency -= price;
         else
             Debug.Log($"Нехватает {price - LoveCurrency} сердечек");
 
@@ -34,7 +34,7 @@ public class PaymentsManager
     public void SpendKeys(int price)
     {
         if (CanPay(price, Keys))
-            Keys += price;
+            Keys -= price;
         else
             Debug.Log($"Нехватает {price - Keys} ключей");
 
@@ -42,4 +42,10 @@ public class PaymentsManager
     }
 
     public bool CanPay(float needfullCurrensy, float realCurrensy) => needfullCurrensy <= realCurrensy;
+
+    public void ResetEvent()
+    {
+        OnLoveCurrencyTransaction = null;
+        OnKeysTransaction = null;
+    }
 }
