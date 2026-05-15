@@ -13,28 +13,29 @@ public class MiniGameMain : MonoBehaviour
     public MiniGameDataMain Data;
     public GameObject MinigameContainer;
     [SerializeField] private Collider2D _barier;
-    [SerializeField] private Image _agressiveBar;
-    public GameObject CurrentLine;
+    public Image AgressiveBar;
+    [HideInInspector] public GameObject CurrentLine;
+    public Image InvertPointPrefab;
 
     [Header("ObjectPoolin")]
     private PointController _pointController;
-    [HideInInspector] public List<MiniGamePoint> _busyObjects = new();
-    public List<MiniGamePoint> _freeObjects = new();
-    public GameObject _freeObjectsParent;
+    [HideInInspector] public List<MiniGamePoint> BusyObjects = new();
+    public List<MiniGamePoint> FreeObjects = new();
+    public GameObject FreeObjectsParent;
 
     [Header("Settings")]
     private MiniGameLineController _miniGameLineController;
     private float _angryScore;
     [HideInInspector] public bool GameIsStart;
     [HideInInspector] public bool LineInvert;
-    [HideInInspector] public List<bool> _completedInvertPoint = new();
+    [HideInInspector] public List<InvertPoint> InvertsPoint = new();
 
 
     private void Awake()
     {
         _pointController = new PointController(
-            _freeObjects,
-            _busyObjects,
+            FreeObjects,
+            BusyObjects,
             Data.PointPrefab,
             _barier);
 
@@ -87,7 +88,7 @@ public class MiniGameMain : MonoBehaviour
 
     private void UpdateUI()
     {
-        _agressiveBar.fillAmount = _angryScore;
+        AgressiveBar.fillAmount = _angryScore;
 
         if (!CurrentFactor.CanInvertLine)
             return;
@@ -97,9 +98,10 @@ public class MiniGameMain : MonoBehaviour
             float invertPoint = CurrentFactor.InvertPoints[i];
             if (tempScore >= invertPoint
                 && ((tempScore - invertPoint) <= CurrentFactor.ScoreTaked)
-                && !_completedInvertPoint[i])
+                && !InvertsPoint[i].Completed)
             {
-                _completedInvertPoint[i] = true;
+                InvertsPoint[i].Completed = true;
+                InvertsPoint[i].ImagePoit.color = Color.gray;
                 StartCoroutine(_miniGameLineController.InvertLine(1, _barier));
             }
         }
@@ -109,5 +111,12 @@ public class MiniGameMain : MonoBehaviour
     {
         MiniGamePoint.OnPointResult -= GetPointResult;
         MiniGamePoint.OnPointFinished -= _pointController.RecyclePoint;
+    }
+
+    public class InvertPoint
+    {
+        public Image ImagePoit;
+        public bool Completed;
+        public InvertPoint(Image img)=> ImagePoit = img;
     }
 }

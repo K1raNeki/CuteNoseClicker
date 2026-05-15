@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MiniGameLineController
 {
@@ -12,9 +13,6 @@ public class MiniGameLineController
         switch (isStart)
         {
             case true:
-                for (int i = 0; i < _miniGameMain.CurrentFactor.InvertPoints.Length; i++)
-                    _miniGameMain._completedInvertPoint.Add(false);
-
                 if (_miniGameMain.CurrentLine != null)
                     _miniGameMain.CurrentLine.SetActive(true);
                 else
@@ -27,20 +25,41 @@ public class MiniGameLineController
                     screenWidth / parentScale.x,
                     _miniGameMain.Data.LineHight / parentScale.y);
 
-                // _miniGameMain.CurrentLine.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Camera.main.aspect, _miniGameMain.Data.LineHight);
+                ArrangeInvertPoint();
                 break;
 
             case false:
-                _miniGameMain._completedInvertPoint.Clear();
                 _miniGameMain.CurrentLine.SetActive(false);
 
-                foreach (MiniGamePoint point in _miniGameMain._busyObjects)
+                foreach (MiniGamePoint point in _miniGameMain.BusyObjects)
                 {
-                    _miniGameMain._freeObjects.Add(point);
+                    _miniGameMain.FreeObjects.Add(point);
                     point.gameObject.SetActive(false);
                 }
-                _miniGameMain._busyObjects.Clear();
+
+                foreach (MiniGameMain.InvertPoint point in _miniGameMain.InvertsPoint)
+                    Object.Destroy(point.ImagePoit.gameObject);
+
+                _miniGameMain.InvertsPoint.Clear();
+                _miniGameMain.BusyObjects.Clear();
                 break;
+        }
+    }
+
+    private void ArrangeInvertPoint()
+    {
+        for (int i = 0; i < _miniGameMain.CurrentFactor.InvertPoints.Length; i++)
+        {
+            MiniGameMain.InvertPoint newInvertPoint
+                = new MiniGameMain.InvertPoint(Object.Instantiate(
+                    _miniGameMain.InvertPointPrefab, _miniGameMain.AgressiveBar.transform));
+
+            RectTransform rt = newInvertPoint.ImagePoit.rectTransform;
+            rt.anchorMin = new Vector2(_miniGameMain.CurrentFactor.InvertPoints[i], 0.5f);
+            rt.anchorMax = new Vector2(_miniGameMain.CurrentFactor.InvertPoints[i], 0.5f);
+            rt.sizeDelta = new Vector2(80f, 80);
+
+            _miniGameMain.InvertsPoint.Add(newInvertPoint);
         }
     }
 
@@ -52,7 +71,7 @@ public class MiniGameLineController
 
         _miniGameMain.GameIsStart = false;
         barier.transform.position = new Vector3(-xPos, mainPos.position.y, mainPos.position.z);
-        foreach (MiniGamePoint point in _miniGameMain._busyObjects)
+        foreach (MiniGamePoint point in _miniGameMain.BusyObjects)
             point.StartCoroutine(point.InvertPoint(dur));
 
         yield return new WaitForSeconds(dur);

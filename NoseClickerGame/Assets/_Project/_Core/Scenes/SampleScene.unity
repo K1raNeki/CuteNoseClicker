@@ -679,7 +679,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &128283255
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1680,10 +1680,11 @@ MonoBehaviour:
   Data: {fileID: 11400000, guid: dcdf362bd306046738b6c180bbe7f215, type: 2}
   MinigameContainer: {fileID: 128283254}
   _barier: {fileID: 1440818445}
-  _agressiveBar: {fileID: 385349645}
+  AgressiveBar: {fileID: 385349645}
   CurrentLine: {fileID: 0}
-  _busyObjects: []
-  _freeObjects:
+  InvertPointPrefab: {fileID: 4412811836036453191, guid: 6f6c5bfed186d4aa79d15b9480d94edc, type: 3}
+  BusyObjects: []
+  FreeObjects:
   - {fileID: 1796604793}
   - {fileID: 654334939}
   - {fileID: 2085620152}
@@ -1704,10 +1705,9 @@ MonoBehaviour:
   - {fileID: 557030661}
   - {fileID: 899945608}
   - {fileID: 1445792212}
-  _freeObjectsParent: {fileID: 91930352}
+  FreeObjectsParent: {fileID: 91930352}
   GameIsStart: 0
   LineInvert: 0
-  _completedInvertPoint: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -4452,7 +4452,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1440818443
 Transform:
   m_ObjectHideFlags: 0
@@ -6070,7 +6070,7 @@ RectTransform:
   m_GameObject: {fileID: 2071269088}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 8.875, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 385349644}
@@ -6079,7 +6079,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 99}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 1145.43, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2071269090
 MonoBehaviour:
